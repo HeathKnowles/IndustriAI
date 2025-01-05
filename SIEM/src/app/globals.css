@@ -1,21 +1,84 @@
+/* globals.css */
+
+/* General Reset */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Body Styling */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb; /* Light Gray Background */
+  color: #374151; /* Gray-800 for Text */
+  margin: 0;
+  padding: 0;
 }
+
+/* Header Styling */
+header {
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e5e7eb; /* Light Border */
+}
+
+/* Card Styling */
+.card {
+  @apply bg-white p-6 rounded-md shadow;
+}
+
+/* Text Highlights */
+.text-title {
+  @apply text-xl font-semibold text-gray-900;
+}
+
+.text-subtitle {
+  @apply text-sm text-gray-500;
+}
+
+.text-link {
+  @apply text-blue-500 hover:underline;
+}
+
+/* Scroll Behavior */
+.scrollable {
+  @apply h-64 overflow-y-scroll;
+}
+
+/* Custom Button Styling */
+.btn {
+  @apply px-4 py-2 rounded-md;
+}
+
+.btn-primary {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.btn-secondary {
+  @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white hover:bg-red-600;
+}
+
+/* Table Styling */
+.table {
+  @apply w-full text-left border-collapse;
+}
+
+.table th {
+  @apply text-gray-500 text-sm uppercase tracking-wide border-b px-4 py-2;
+}
+
+.table td {
+  @apply text-gray-700 text-sm px-4 py-2 border-b;
+}
+
+/* Tailwind Utilities for Accessibility and Responsiveness */
+.hidden-md {
+  @apply hidden md:block;
+}
+
+.center-content {
+  @apply flex items-center justify-center;
+}
+
