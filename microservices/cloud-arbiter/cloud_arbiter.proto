@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package cloudarbiter;
+
+service CloudArbiter {
+    // GET request to receive metadata for policy evaluation
+    rpc GetMetadata (MetadataRequest) returns (MetadataResponse);
+
+    // POST request to send the evaluation result (ALLOW or DENY)
+    rpc PostDecision (DecisionRequest) returns (DecisionResponse);
+}
+
+message MetadataRequest {
+    string metadata = 1;  // Metadata for evaluation
+}
+
+message MetadataResponse {
+    string metadata = 1;  // The metadata sent back after processing
+}
+
+message DecisionRequest {
+    string policy_id = 1;  // ID of the policy being evaluated
+    string action = 2;      // Action taken (ALLOW or DENY)
+}
+
+message DecisionResponse {
+    string result = 1;     // Result of the policy evaluation (ALLOW or DENY)
+}
+
