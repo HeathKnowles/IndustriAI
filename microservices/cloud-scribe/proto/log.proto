@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package log;
+
+service LogService {
+  rpc CollectLog (LogEntry) returns (LogAck);
+}
+
+message LogEntry {
+  string service_name = 1;
+  string level = 2;
+  string message = 3;
+  string timestamp = 4;
+}
+
+message LogAck {
+  string status = 1;
+}
