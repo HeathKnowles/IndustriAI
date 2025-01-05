@@ -1,14 +1,28 @@
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables from .env file
+
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { VaultClient } from "hashi-vault-js";
+import pkg from 'hashi-vault-js';  // Import the entire module
+const VaultClient = pkg;  // Directly assign the package to VaultClient
 import axios from "axios";
 
 // Load proto file
-const packageDefinition = protoLoader.loadSync("cloud_arbiter.proto");
+const packageDefinition = protoLoader.loadSync("cloud_arbiter.proto", {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true,
+});
 const proto = grpc.loadPackageDefinition(packageDefinition).cloudarbiter;
 
 // Initialize clients
-const vault = new VaultClient({ endpoint: "http://127.0.0.1:8200" });
+const vault = new VaultClient({
+  endpoint: "http://127.0.0.1:8200", // Vault endpoint
+  token: process.env.VAULT_TOKEN, // Vault token loaded from .env file
+});
+
 const opaClient = axios.create({
   baseURL: "http://localhost:8181", // Default OPA server URL
   headers: {
@@ -42,6 +56,14 @@ async function evaluateWithOPA(policyName, metadata) {
 async function getPolicy(call, callback) {
   try {
     const metadata = call.request.metadata;
+    if (!metadata) {
+      callback({
+        code: grpc.status.INVALID_ARGUMENT,
+        details: "Metadata is required",
+      });
+      return;
+    }
+
     const response = await vault.read(`secret/data/policies/${metadata}`);
 
     if (!response?.data?.data?.policy) {
@@ -61,6 +83,14 @@ async function getPolicy(call, callback) {
 async function postDecision(call, callback) {
   try {
     const { policy, metadata } = call.request;
+
+    if (!policy || !metadata) {
+      callback({
+        code: grpc.status.INVALID_ARGUMENT,
+        details: "Both policy and metadata are required",
+      });
+      return;
+    }
 
     // Extract policy name from the policy document
     const policyName = policy.name || "default";
@@ -94,3 +124,12 @@ server.bindAsync(
     console.log(`Server running at http://localhost:${port}`);
   },
 );
+
+// Graceful shutdown handling
+process.on("SIGTERM", () => {
+  console.log("Received SIGTERM. Shutting down server...");
+  server.tryShutdown(() => {
+    console.log("Server shutdown successfully");
+    process.exit(0);
+  });
+});

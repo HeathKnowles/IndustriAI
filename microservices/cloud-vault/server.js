@@ -13,7 +13,7 @@ const protoOptions = {
 
 const vault = new VaultClient({ 
     endpoint: process.env.VAULT_ADDR || 'http://127.0.0.1:8200',
-    token: process.env.VAULT_TOKEN
+    token: process.env.VAULT_TOKEN   || ''
 });
 
 // Load gRPC Proto file
