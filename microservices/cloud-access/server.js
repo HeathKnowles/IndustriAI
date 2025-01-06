@@ -38,8 +38,8 @@ async function connectToMongoDB() {
 
 async function insertSampleData(collection) {
     const sampleData = [
-        { timestamp: new Date(), status: 'ALLOWED', message: 'Sample allowed event' },
-        { timestamp: new Date(), status: 'DENIED', message: 'Sample denied event' },
+        { timestamp: new Date(), decision: 'ALLOWED', message: 'Sample allowed event' },
+        { timestamp: new Date(), decision: 'DENIED', message: 'Sample denied event' },
     ];
     await collection.insertMany(sampleData);
     console.log('Sample data inserted');
@@ -62,7 +62,7 @@ app.get('/accesses/allowed', async (req, res) => {
     try {
         const database = client.db(dbName);
         const collection = database.collection(collectionName);
-        const logs = await collection.find({ status: 'ALLOWED' }).toArray();
+        const logs = await collection.find({ decision: 'ALLOWED' }).toArray();
         res.status(200).json(logs);
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving logs', error });
@@ -73,7 +73,7 @@ app.get('/accesses/denied', async (req, res) => {
     try {
         const database = client.db(dbName);
         const collection = database.collection(collectionName);
-        const logs = await collection.find({ status: 'DENIED' }).toArray();
+        const logs = await collection.find({ decision: 'DENIED' }).toArray();
         res.status(200).json(logs);
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving logs', error });
@@ -81,15 +81,15 @@ app.get('/accesses/denied', async (req, res) => {
 });
 
 app.post('/accesses', async (req, res) => {
-    const { status, message } = req.body;
+    const { decision, message } = req.body;
     const timestamp = new Date();
-    if (!['ALLOWED', 'DENIED'].includes(status)) {
-        return res.status(400).json({ message: 'Invalid status' });
+    if (!['ALLOWED', 'DENIED'].includes(decision)) {
+        return res.status(400).json({ message: 'Invalid decision' });
     }
     try {
         const database = client.db(dbName);
         const collection = database.collection(collectionName);
-        const result = await collection.insertOne({ timestamp, status, message });
+        const result = await collection.insertOne({ timestamp, decision, message });
         res.status(201).json({ message: 'Log entry created', result });
     } catch (error) {
         res.status(500).json({ message: 'Error creating log entry', error });
