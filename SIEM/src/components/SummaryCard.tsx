@@ -13,7 +13,6 @@ const SummaryCard: React.FC = () => {
     fetch('http://localhost:3001/allServices')
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setServices(data);
       });
   }, []);

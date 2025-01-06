@@ -34,7 +34,6 @@ app.get('/allServices', async (req, res) => {
         const database = await client.db(dbName);
         const collection = await database.collection(collectionName);
         const services = await collection.find({}).toArray();
-        console.log(services);
         res.status(200).json(services);
     }
     catch (error) {

@@ -3,11 +3,13 @@ const bodyParser = require('body-parser');
 const { saveLog, getLogs, getLogsCategory } = require('./mongo');
 const dotenv = require('dotenv');
 dotenv.config();
+const cors = require('cors');
 
 const app = express();
 
 // Middleware
 app.use(bodyParser.json());
+app.use(cors());
 
 // HTTP POST endpoint to collect logs
 app.post('/logs', async (req, res) => {
@@ -15,16 +17,19 @@ app.post('/logs', async (req, res) => {
     const logEntry = req.body;
 
     // Validate input
-    if (!logEntry.service_name || !logEntry.level || !logEntry.message) {
-      return res.status(400).json({
-        error: "Invalid log format. 'service_name', 'level', and 'message' are required.",
-      });
+    const requiredFields = ['incident_id', 'timestamp', 'description', 'status', 'assigned_to', 'severity'];
+    for (const field of requiredFields) {
+      if (!logEntry[field]) {
+        return res.status(400).json({
+          error: `Invalid log format. '${field}' is required.`,
+        });
+      }
     }
 
-    // Add timestamp if missing
-    logEntry.timestamp = logEntry.timestamp || new Date().toISOString();
-
-    console.log('Received log:', logEntry);
+    // Increment incident_id
+    const logs = await getLogs();
+    const lastIncidentId = logs.length > 0 ? Math.max(...logs.map(log => log.incident_id)) : 0;
+    logEntry.incident_id = lastIncidentId + 1;
 
     // Save log entry to Elasticsearch
     await saveLog(logEntry);
@@ -39,6 +44,7 @@ app.post('/logs', async (req, res) => {
 app.get('/logs', (req, res) => {
   getLogs()
     .then((logs) => {
+      console.log('Retrieved logs:', logs);
       res.json(logs);
     })
     .catch((err) => {
@@ -60,7 +66,7 @@ app.get('/logs/:category', (req, res) => {
 });
 
 // Start the HTTP server
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3002;
 app.listen(port, () => {
   console.log(`Cloud Scribe (Log Collection) running on http://localhost:${port}`);
 });

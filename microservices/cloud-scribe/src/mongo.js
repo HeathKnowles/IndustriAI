@@ -60,3 +60,34 @@ async function getLogsCategory(category) {
 connectToMongoDB();
 
 module.exports = { saveLog, getLogs, getLogsCategory };
+
+async function initializeDatabase() {
+  try {
+    const database = client.db('cloud-scribe');
+    const collections = await database.listCollections({ name: 'logs' }).toArray();
+    if (collections.length === 0) {
+      await database.createCollection('logs');
+      console.log('Collection "logs" created');
+    } else {
+      console.log('Collection "logs" already exists');
+    }
+
+    const collection = database.collection('logs');
+    const logCount = await collection.countDocuments();
+    if (logCount === 0) {
+      const sampleLogs = [
+        { incident_id: '1', timestamp: new Date(), description: 'Sample incident 1', status: 'open', assigned_to: 'user1', severity: 'low' },
+        { incident_id: '2', timestamp: new Date(), description: 'Sample incident 2', status: 'closed', assigned_to: 'user2', severity: 'high' },
+        { incident_id: '3', timestamp: new Date(), description: 'Sample incident 3', status: 'in-progress', assigned_to: 'user3', severity: 'medium' }
+      ];
+      await collection.insertMany(sampleLogs);
+      console.log('Sample logs inserted');
+    } else {
+      console.log('Logs already exist in the collection');
+    }
+  } catch (err) {
+    console.error('Error initializing database:', err.message);
+  }
+}
+
+initializeDatabase();
