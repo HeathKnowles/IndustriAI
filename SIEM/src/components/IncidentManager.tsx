@@ -49,30 +49,32 @@ const IncidentManager: React.FC = () => {
   return (
     <div className="bg-white p-6 shadow rounded-md">
       <h2 className="text-2xl font-semibold mb-4">Incident Management</h2>
-      <table className="min-w-full table-auto">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 border-b text-left">Incident ID</th>
-            <th className="px-4 py-2 border-b text-left">Timestamp</th>
-            <th className="px-4 py-2 border-b text-left">Description</th>
-            <th className="px-4 py-2 border-b text-left">Status</th>
-            <th className="px-4 py-2 border-b text-left">Assigned To</th>
-            <th className="px-4 py-2 border-b text-left">Severity</th>
-          </tr>
-        </thead>
-        <tbody>
-          {incidents.map((incident) => (
-            <tr key={incident.id}>
-              <td className="px-4 py-2 border-b">{incident.id}</td>
-              <td className="px-4 py-2 border-b">{incident.timestamp}</td>
-              <td className="px-4 py-2 border-b">{incident.description}</td>
-              <td className="px-4 py-2 border-b">{incident.status}</td>
-              <td className="px-4 py-2 border-b">{incident.assignedTo}</td>
-              <td className="px-4 py-2 border-b">{incident.severity}</td>
+      <div className="overflow-x-auto" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 border-b text-left">Incident ID</th>
+              <th className="px-4 py-2 border-b text-left">Timestamp</th>
+              <th className="px-4 py-2 border-b text-left">Description</th>
+              <th className="px-4 py-2 border-b text-left">Status</th>
+              <th className="px-4 py-2 border-b text-left">Assigned To</th>
+              <th className="px-4 py-2 border-b text-left">Severity</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {incidents.map((incident) => (
+              <tr key={incident.id}>
+                <td className="px-4 py-2 border-b">{incident.id}</td>
+                <td className="px-4 py-2 border-b">{incident.timestamp}</td>
+                <td className="px-4 py-2 border-b">{incident.description}</td>
+                <td className="px-4 py-2 border-b">{incident.status}</td>
+                <td className="px-4 py-2 border-b">{incident.assignedTo}</td>
+                <td className="px-4 py-2 border-b">{incident.severity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -15,12 +15,14 @@ const Dashboard: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-800">Microservices Dashboard</h1>
       </header>
       <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <SummaryCard />
-        <LogViewer />
+        <div className="col-span-1 md:col-span-2 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+          <SummaryCard />
+          <IncidentManager />
+        </div>
         <AnomalyList />
         <AccessDecisions />
         <RequestTracker />
-        <IncidentManager /> {/* Add the IncidentManager component here */}
+        {/* <LogViewer /> */}
       </main>
     </div>
   );
