@@ -44,7 +44,6 @@ app.post('/logs', async (req, res) => {
 app.get('/logs', (req, res) => {
   getLogs()
     .then((logs) => {
-      console.log('Retrieved logs:', logs);
       res.json(logs);
     })
     .catch((err) => {
