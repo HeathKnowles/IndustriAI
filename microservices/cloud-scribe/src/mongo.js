@@ -30,6 +30,33 @@ async function saveLog(logEntry) {
   }
 }
 
+async function getLogs() {
+  try {
+    const database = client.db('cloud-scribe');
+    const collection = database.collection('logs');
+    const logs = await collection.find().toArray();
+    return logs;
+  } catch (err) {
+    console.error('Error getting logs from MongoDB:', err.message);
+    return [];
+  }
+}
+
+async function getLogsCategory(category) {
+  try {
+    const database = client.db('cloud-scribe');
+    const collection = database.collection('logs');
+    const logs = await collection.find({
+      category
+    }).toArray();
+    return logs;
+  }
+  catch (err) {
+    console.error('Error getting logs from MongoDB:', err.message);
+    return [];
+  }
+}
+
 connectToMongoDB();
 
-module.exports = { saveLog };
+module.exports = { saveLog, getLogs, getLogsCategory };

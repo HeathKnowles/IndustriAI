@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { saveLog } = require('./elasticsearch');
+const { saveLog, getLogs, getLogsCategory } = require('./mongo');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -34,6 +34,29 @@ app.post('/logs', async (req, res) => {
     console.error('Failed to process log:', err);
     res.status(500).json({ error: 'Failed to process log' });
   }
+});
+
+app.get('/logs', (req, res) => {
+  getLogs()
+    .then((logs) => {
+      res.json(logs);
+    })
+    .catch((err) => {
+      console.error('Error getting logs:', err);
+      res.status(500).json({ error: 'Failed to get logs' });
+    });
+});
+
+app.get('/logs/:category', (req, res) => {
+  const category = req.params.category;
+  getLogsCategory(category)
+    .then((logs) => {
+      res.json(logs);
+    })
+    .catch((err) => {
+      console.error('Error getting logs:', err);
+      res.status(500).json({ error: 'Failed to get logs' });
+    });
 });
 
 // Start the HTTP server
