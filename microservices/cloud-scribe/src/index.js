@@ -1,32 +1,43 @@
-require('dotenv').config();
 const express = require('express');
-const { createGrpcServer } = require('./grpc-service');
-const logger = require('./logger');
+const bodyParser = require('body-parser');
+const { saveLog } = require('./elasticsearch');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON
-app.use(express.json());
+// Middleware
+app.use(bodyParser.json());
 
-// Endpoint to receive logs via HTTP
+// HTTP POST endpoint to collect logs
 app.post('/logs', async (req, res) => {
-  const { service_name, level, message } = req.body;
-  const logEntry = { service_name, level, message, timestamp: new Date().toISOString() };
-
   try {
-    logger.sendToFluentd(logEntry);
-    return res.status(200).json({ status: 'Log received and forwarded.' });
+    const logEntry = req.body;
+
+    // Validate input
+    if (!logEntry.service_name || !logEntry.level || !logEntry.message) {
+      return res.status(400).json({
+        error: "Invalid log format. 'service_name', 'level', and 'message' are required.",
+      });
+    }
+
+    // Add timestamp if missing
+    logEntry.timestamp = logEntry.timestamp || new Date().toISOString();
+
+    console.log('Received log:', logEntry);
+
+    // Save log entry to Elasticsearch
+    await saveLog(logEntry);
+
+    res.json({ status: 'Log received and forwarded to Elasticsearch' });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Failed to process log.' });
+    console.error('Failed to process log:', err);
+    res.status(500).json({ error: 'Failed to process log' });
   }
 });
 
-// Start HTTP server
-app.listen(PORT, () => {
-  console.log(`Cloud Scribe HTTP server running on port ${PORT}`);
+// Start the HTTP server
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Cloud Scribe (Log Collection) running on http://localhost:${port}`);
 });
-
-// Start gRPC server
-createGrpcServer();

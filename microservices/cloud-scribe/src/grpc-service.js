@@ -1,7 +1,6 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const path = require('path');
-const { sendToFluentd } = require('./logger');
 
 const PROTO_PATH = path.resolve(__dirname, '../proto/log.proto');
 
@@ -19,7 +18,6 @@ const logProto = grpc.loadPackageDefinition(packageDefinition).log; // Adjusted 
 function collectLog(call, callback) {
   const logEntry = call.request;
   try {
-    sendToFluentd(logEntry);
     callback(null, { status: 'Log received and forwarded via gRPC.' });
   } catch (err) {
     console.error(err);
