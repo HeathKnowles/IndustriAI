@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import SummaryCard from '../components/SummaryCard';
 import LogViewer from '../components/LogViewer';
@@ -6,6 +6,7 @@ import AnomalyList from '../components/AnomalyList';
 import PolicyManager from '../components/PolicyManager';
 import RequestTracker from '../components/RequestTracker';
 import AccessDecisions from '../components/AccessDecisions';
+import IncidentManager from '../components/IncidentManager'; // Import the new component
 
 const Dashboard: React.FC = () => {
   return (
@@ -19,7 +20,7 @@ const Dashboard: React.FC = () => {
         <AnomalyList />
         <AccessDecisions />
         <RequestTracker />
-        {/* <PolicyManager /> */}
+        <IncidentManager /> {/* Add the IncidentManager component here */}
       </main>
     </div>
   );
